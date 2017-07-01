@@ -56,16 +56,17 @@ def get_image(url, title):
         image = image_wrapper.find("img")
         image_url = image.get('src')
 
-        invalid_characters = [" ","\\","/","$"]
+        invalid_characters = [u'\xa0',' ','\\','/','$','"','|']
         for char in invalid_characters:
-            title.replace(char,"")
+            title = title.replace(char,'')
         filename = title+".jpg"
         r = requests.get(image_url, stream=True)
         with open(filename, 'wb') as out_file:
             shutil.copyfileobj(r.raw, out_file)
         return filename
     except AttributeError:
-        return -1
+        pass
+    return -1
 
 def get_price(url):
     r = requests.get(url)
@@ -79,7 +80,8 @@ def get_price(url):
         except ValueError: #probably a price spread
             return -1 
     except AttributeError: #e.g. nonetype has no .text 
-        return -1 
+        pass
+    return -1
 
 def get_title(url):
     r = requests.get(url)
@@ -89,7 +91,19 @@ def get_title(url):
         title = title.strip()
         return title
     except AttributeError:
-        return -1
+        pass
+    return -1
+
+def get_category(url):
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, "html.parser")
+    try:
+        category = soup.find("span", class_="nav-a-content").text
+        category = category.strip()
+        return category
+    except AttributeError:
+        pass
+    return -1
 
 
     
@@ -104,16 +118,19 @@ def get_listables():
     for product in product_dict:
         temp_dict = {}
         url = base_url + product_dict[product]
-        print(url)
+        #print(url)
         title = get_title(url)
         if(title == -1):
-            print("invalid")
+            continue
+            #print("invalid")
         else:
             temp_dict['title'] = title
             temp_dict['price'] = get_price(url)
             temp_dict['description'] = get_description(url)
             temp_dict['image'] = get_image(url, title) #filename of image
+            temp_dict['category'] = get_category(url)
+            if(-1 in temp_dict.values()):
+                continue
             listables.append(temp_dict)
     return listables
 
-get_listables()    
