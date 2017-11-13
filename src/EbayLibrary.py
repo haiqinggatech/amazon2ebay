@@ -2,23 +2,10 @@ from ebaysdk.trading import Connection as Trading
 from ebaysdk.exception import ConnectionError
 from difflib import SequenceMatcher
 
-app_id = open("AppID.txt","r").read().strip() #strip gets rid of the newlines
-dev_id = open("DevID.txt","r").read().strip()
-cert_id = open("CertID.txt","r").read().strip()
-auth_token = open("AuthnAuthToken.txt","r").read().strip()
-
-#try:    
-    #api = Trading(appid=app_id, devid=dev_id, certid=cert_id, token=auth_token,config_file=None)
-#    api = Trading()
-#    response = api.execute('GetUser', {})
-#    print(response.dict())
-#    print(response.reply) 
-#    #response = api.execute('GetCategories',{})
-#    #print(response.dict())
-
-#except ConnectionError as e:
-#    print(e)
-#    print(e.response.dict())
+app_id = open("../auth/AppID.txt","r").read().strip()
+dev_id = open("../auth/DevID.txt","r").read().strip()
+cert_id = open("../auth/CertID.txt","r").read().strip()
+auth_token = open("../auth/AuthnAuthToken.txt","r").read().strip()
 
 def verifyAddItem(title,description,categoryID,price,pictures):
     api = Trading()
@@ -88,6 +75,7 @@ def get_category_id(keyword):
         print(e)
         print(e.response.dict())
 
+# Broken?
 def upload_picture_from_filesystem(filepath):
     try:
         api = Trading()
